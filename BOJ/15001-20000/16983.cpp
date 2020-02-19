@@ -2,32 +2,29 @@
 using namespace std;
 typedef long long ll;
 
-int N;
-int cnt[100010][2];
+int N, C[100001][2], c[2];
+ll x, y, A;
 
 int main() {
 	scanf("%d", &N);
-	ll x, y;
-	ll ans=0;
 	for (int i=0; i<2*N; i++) {
 		scanf("%lld %lld", &x, &y);
-		if (x<1) { ans+=1ll-x; x=1; }
-		else if (x>N) { ans+=x-N; x=N; }
-		if (y>2) { ans+=y-2ll; y=2; }
-		else if (y<1) { ans+=1-y; y=1; }
-		cnt[x][y-1]++;
+		if (x<1) A+=1-x, x=1;
+		else if (x>N) A+=x-N, x=N;
+		if (y>2) A+=y-2, y=2;
+		else if (y<1) A+=1-y, y=1;
+		C[x][y-1]++;
 	}
-	int c[2]; c[0]=c[1]=0;
 	for (int i=1; i<=N; i++) {
-		c[0]+=cnt[i][0]-1, c[1]+=cnt[i][1]-1;
+		c[0]+=C[i][0]-1, c[1]+=C[i][1]-1;
 		if ((ll)c[0]*c[1]<0) {
 			int im=min(abs(c[0]), abs(c[1]));
-			ans+=(ll)im;
+			A+=im;
 			c[0]=(abs(c[0])-im)*(c[0]/abs(c[0]));
 			c[1]=(abs(c[1])-im)*(c[1]/abs(c[1]));
 		}
-		ans+=abs(c[0])+abs(c[1]);
+		A+=abs(c[0])+abs(c[1]);
 	}
-	printf("%lld\n", ans);
+	printf("%lld\n", A);
 	return 0;
 }
