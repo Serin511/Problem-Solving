@@ -4,9 +4,9 @@
 using namespace std;
 typedef tuple<int, int> pii;
 
-const int B=20, INF=(1<<30);
+const int B=10, INF=(1<<30);
 
-int R, C, Q, H[5005][205], V[5005][205], S[520][205][205], D[205];
+int R, C, Q, H[5005][205], V[5005][205], S[1050][205][205], D[205];
 
 void upd(int i, int s, int e, int ts, int te) {
 	if (e<ts||te<s) return ;
@@ -31,6 +31,7 @@ void upd(int i, int s, int e, int ts, int te) {
 }
 
 int main() {
+	ios_base::sync_with_stdio(0); cin.tie(0);
 	cin>>R>>C;
 	for (int i=0; i<R; i++) for (int j=0; j<C-1; j++) cin>>H[i][j];
 	for (int i=0; i<R-1; i++) for (int j=0; j<C; j++) cin>>V[i][j];
