@@ -1,14 +1,12 @@
 #include <bits/stdc++.h>
-#define fi first
-#define se second
 using namespace std;
 typedef tuple<int, int> pii;
 
-const int B=10, INF=(1<<30);
+const int B=10, INF=1e9, X=5005, Y=205;
 
-int R, C, Q, H[5005][205], V[5005][205], S[1050][205][205], D[205];
+int R, C, Q, H[X][Y], V[X][Y], S[1050][Y][Y], D[Y];
 
-void upd(int i, int s, int e, int ts, int te) {
+void upd(int ts, int te, int i=1, int s=0, int e=R-1) {
 	if (e<ts||te<s) return ;
 	if (e-s+1<=B) {
 		memset(S[i], 0x3f, sizeof(S[i]));
@@ -21,8 +19,8 @@ void upd(int i, int s, int e, int ts, int te) {
 		return ;
 	}
 	int md=(s+e)/2;
-	upd(i*2, s, md, ts, te); upd(i*2+1, md+1, e, ts, te);
-	memset(D, 0, sizeof(D)); D[C]=C-1;
+	upd(ts, te, i*2, s, md); upd(ts, te, i*2+1, md+1, e);
+	fill(D, D+C, 0); D[C]=C-1;
 	for (int j=0; j<C; j++) for (int k=C-1; k>=0; k--) {
 		pii mn(INF, 0);
 		for (int l=D[k]; l<=D[k+1]; l++) mn=min(mn, pii(S[i*2][j][l]+S[i*2+1][l][k], l));
@@ -35,13 +33,12 @@ int main() {
 	cin>>R>>C;
 	for (int i=0; i<R; i++) for (int j=0; j<C-1; j++) cin>>H[i][j];
 	for (int i=0; i<R-1; i++) for (int j=0; j<C; j++) cin>>V[i][j];
-	upd(1, 0, R-1, 0, R-1);
-	cin>>Q;
-	while (Q--) {
+	upd(0, R-1);
+	cin>>Q; while (Q--) {
 		int q, x, y, w;
 		cin>>q>>x>>y;
-		if (q==1) cin>>w, H[x][y]=w, upd(1, 0, R-1, x, x);
-		if (q==2) cin>>w, V[x][y]=w, upd(1, 0, R-1, x, x+1);
+		if (q==1) cin>>w, H[x][y]=w, upd(x, x);
+		if (q==2) cin>>w, V[x][y]=w, upd(x, x+1);
 		if (q==3) cout<<S[1][x][y]<<'\n';
 	}
 	return 0;
