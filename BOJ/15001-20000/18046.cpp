@@ -38,23 +38,11 @@ struct Seg {
 	int get(int ts, int te, ll v1, ll v2) { return get(1, 0, SZ-1, ts, te, v1, v2); }
 };
 
-struct UF {
-	vim p;
-	UF(int N) : p(N+1, 0) {}
-	void init() { fill(all(p), 0); }
-	int get(int x) { return p[x]?(p[x]=get(p[x])):x; }
-	void Un(int x, int y) {
-		x=get(x), y=get(y);
-		if (x!=y) p[y]=x;
-	}
-	bool comp(int x, int y) { return get(x)==get(y); }
-};
-
 ll sq(ll x) { return x*x; }
 
 int N, M, K, Q;
 set<pii> adj[500005];
-vector<pii> V[500005]; vim add[500005], tr[500005];
+vector<pii> V[500005], add; vim tr[500005], e;
 
 ll mysqrt(ll x) {
 	ll s=0, e=INF;
@@ -65,6 +53,25 @@ ll mysqrt(ll x) {
 	}
 	return s;
 }
+
+struct UF {
+	vim p; vector<unordered_set<int> > X; int SZ;
+	UF(int N) : p(N+1, 0), X(N+1), SZ(N) {}
+	inline int get(int x) { return p[x]?(p[x]=get(p[x])):x; }
+	inline void Un(int x, int y, int t) {
+		x=get(x), y=get(y);
+		if (x==y) return ;
+		if (X[x].size()<X[y].size()) swap(x, y);
+		for (auto &i:X[y]) {
+			if (X[x].find(i)!=X[x].end()) {
+				e[i]=t;
+				X[x].erase(i);
+			}
+			else X[x].em(i);
+		}
+		p[y]=x;
+	}
+};
 
 void solve() {
 	cin>>N;
@@ -96,7 +103,6 @@ void solve() {
 	vector<pii> Ch; Ch.eb(0,0);
 	vim lst(N+5, 0); vlm H(N+5, 0);
 	cin>>K;
-	for (int i=1; i<=K+1; i++) add[i].clear();
 	for (int i=1, v, h; i<=K; i++) cin>>v>>h, Ch.eb(v, h), St[v].T.eb(i), H[v]+=h, St[v].D.eb(H[v]);
 	for (int i=1; i<=N; i++) St[i].init();
 
@@ -116,22 +122,12 @@ void solve() {
 
 	cin>>Q; UF U(N);
 	vector<pii> qu(Q); for (auto &i:qu) cin>>i.fi>>i.se;
-	vim s(Q, 1), e(Q, K+1);
-	for (int i=1; i<=K+1; i++) add[i].clear();
-	for (int i=0; i<M; i++) add[min(T[i], K+1)].eb(i);
-	for (int w=0; w<20; w++) {
-		U.init();
-		for (int i=1; i<=K+1; i++) tr[i].clear();
-		for (int i=0; i<Q; i++) tr[(s[i]+e[i]+1)/2].eb(i);
-		for (int i=K+1; i; i--) {
-			for (auto &j:add[i]) U.Un(E[j].fi, E[j].se);
-			for (auto &j:tr[i]) {
-				if (U.comp(qu[j].fi, qu[j].se)) s[j]=i;
-				else e[j]=i-1;
-			}
-		}
-	}
-	for (auto &i:s) cout<<(i==K+1?-1:i)<<'\n';
+	e.resize(Q); add.clear(); fill(all(e), K+1);
+	for (int i=0; i<M; i++) add.eb(min(T[i], K+1), i);
+	sort(all(add)); reverse(all(add));
+	for (int i=0; i<Q; i++) U.X[qu[i].fi].em(i), U.X[qu[i].se].em(i);
+	for (auto &i:add) U.Un(E[i.se].fi, E[i.se].se, i.fi);
+	for (auto &i:e) cout<<(i==K+1?-1:i)<<'\n';
 }
 
 int main() {
