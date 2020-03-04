@@ -1,25 +1,11 @@
 #include <bits/stdc++.h>
-#pragma GCC optimize("Ofast")
-#pragma GCC optimize("unroll-loops")
-#define fi first
-#define se second
-#define ryan bear
-#define sq(X) ((X)*(X))
-#define eb emplace_back
-#define all(V) (V).begin(), (V).end()
-#define unq(V) (V).erase(unique(all(V)), (V).end())
 using namespace std;
-typedef long long ll;
-typedef vector<ll> vlm;
-typedef vector<int> vim;
-typedef pair<ll, ll> pll;
-typedef pair<int, int> pii;
 
 int L, Q;
 int a1[(1<<20)], a2[(1<<20)], a3[(1<<20)], a4[(1<<20)];
 char s[20];
 
-inline void f1() {
+void f1() {
 	int x, y, ans; x=y=ans=0;
 	for (int i=0; i<L; i++) {
 		if (s[i]=='1') x|=(1<<i);
@@ -29,7 +15,7 @@ inline void f1() {
 	for (int i=y; i; i=(i-1)&y) ans+=a3[i|x]*(a4[i]%2?-1:1);
 	printf("%d\n", ans);
 }
-inline void f2() {
+void f2() {
 	int x, y, ans; x=y=ans=0;
 	for (int i=0; i<L; i++) {
 		if (s[i]=='0') x|=(1<<i);
@@ -39,7 +25,7 @@ inline void f2() {
 	for (int i=y; i; i=(i-1)&y) ans+=a2[i|x]*(a4[i]%2?-1:1);
 	printf("%d\n", ans);
 }
-inline void f3() {
+void f3() {
 	int x, y, ans; x=y=ans=0;
 	for (int i=0; i<L; i++) {
 		if (s[i]=='1') x|=(1<<i);
