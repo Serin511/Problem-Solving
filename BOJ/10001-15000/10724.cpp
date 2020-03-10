@@ -33,9 +33,8 @@ struct UF {
 			if (sz[x]<sz[y]) swap(x, y);
 			P1.eb(y), P2.eb(x), P3.eb(sz[x]);
 			pr[y]=x; sz[x]=max(sz[x], sz[y]+1);
-			return 1;
 		}
-		return 0;
+		return x!=y;
 	}
 }U;
 
@@ -51,9 +50,9 @@ void dnc(int s, int e, ll cost, vector<Edge> &E, vector<Edge> &C) {
 		return ;
 	}
 	vector<Edge> L, R, E1, E2;
-	int md=(s+e)/2;
+	int md=(s+e)/2, c=0, t=0;
 	for (auto &i:C) (i.t<=md?L:R).eb(i);
-	int c=0, t=0;
+
 	for (auto &i:C) if (U.Un(i.u, i.v)) c++;
 	for (auto &i:E) {
 		if (U.Un(i.u, i.v)) t++, c++, E1.eb(i), cost+=i.c;
@@ -61,9 +60,12 @@ void dnc(int s, int e, ll cost, vector<Edge> &E, vector<Edge> &C) {
 	}
 	U.pop(c); c=0;
 	for (auto &i:E1) U.Un(i.u, i.v); E1.clear();
+
 	for (auto &i:E2) if (U.Un(i.u, i.v)) c++, E1.eb(i);
 	U.pop(c); E2.clear();
-	dnc(s, md, cost, E1, L); merge(all(E1), all(L), back_inserter(E2));
+
+	dnc(s, md, cost, E1, L);
+	merge(all(E1), all(L), back_inserter(E2));
 	dnc(md+1, e, cost, E2, R);
 	U.pop(t);
 }
