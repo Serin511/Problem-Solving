@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MX = 100005, B = 300, C = 500;
+const int MX = 100005, B = 300, C = 350;
 
 int N, M, K, Q;
 int ar[MX], L[MX], R[MX];
