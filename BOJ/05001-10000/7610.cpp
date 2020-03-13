@@ -5,8 +5,7 @@ typedef vector<int> vim;
 
 const int MX = 100005;
 
-int N, M, Q, c, X[MX], Y[MX], Z[MX], lst[MX];
-int in[MX], out[MX], chk[MX];
+int N, M, Q, c, X[MX], Y[MX], Z[MX], lst[MX], in[MX], out[MX];
 vim adj[MX], spt[MX];
 
 int F[MX];
@@ -35,17 +34,14 @@ int main() {
 	for (int i=1; i<=N; i++) Z[i]=1, upd(in[i], 1), upd(out[i], -1);
 	while (M--) {
 		int d, p; cin>>d; p=gp(X[d]);
-		if (chk[d]==0) {
+		if (lst[d]!=-1) {
 			upd(in[Y[d]], -1); upd(out[Y[d]], 1);
-			Z[p]+=Z[Y[d]]-lst[d];
-		}
-		if (chk[d]==1) {
+			Z[p]+=Z[Y[d]]-lst[d]; lst[d]=-1;
+		}else {
 			upd(in[Y[d]], 1); upd(out[Y[d]], -1);
 			Z[Y[d]]=lst[d]=Z[p];
 		}
-		chk[d]=1-chk[d];
 	}
-	for (int i=1; i<=N; i++) Z[i]=Z[gp(i)];
-	while (Q--) cin>>c, cout<<Z[c]<<'\n';
+	while (Q--) cin>>c, cout<<Z[gp(c)]<<'\n';
 	return 0;
 }
