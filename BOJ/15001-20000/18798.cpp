@@ -38,7 +38,7 @@ int main() {
 		if (q==1) {
 			cin>>x;
 			for (int i=0; i<30; i++) if (x&(1<<i)) {
-				qu(l, (1<<i));
+				qu(l, x);
 				for (int j=U[i].gp(l); j<r; j=U[i].gp(j)) qu(j+1, x), U[i].Un(j, j+1);
 			}
 		}
