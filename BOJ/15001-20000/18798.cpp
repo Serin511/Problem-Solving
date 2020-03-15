@@ -10,12 +10,11 @@ void upd(int t, int v) { while (t<=N) F[t]+=v, t+=t&-t; }
 int get(int t) { int r=0; while (t) r+=F[t], t-=t&-t; return r; }
 
 struct UF {
-	int p[MX], mx[MX];
-	UF() { for (int i=1; i<MX; i++) mx[i]=i; }
+	int p[MX];
 	int gp(int x) { return p[x]?(p[x]=gp(p[x])):x; }
 	void Un(int x, int y) {
 		x=gp(x), y=gp(y);
-		p[y]=x; mx[x]=mx[y];
+		p[x]=y;
 	}
 }U[30];
 
@@ -40,8 +39,7 @@ int main() {
 			cin>>x;
 			for (int i=0; i<30; i++) if (x&(1<<i)) {
 				qu(l, (1<<i));
-				int j=U[i].gp(l);
-				while (U[i].mx[j]<r) qu(U[i].mx[j]+1, (1<<i)), U[i].Un(j, U[i].mx[j]+1);
+				for (int j=U[i].gp(l); j<r; j=U[i].gp(j)) qu(j+1, x), U[i].Un(j, j+1);
 			}
 		}
 		if (q==2) cout<<get(r)-get(l-1)<<'\n';
