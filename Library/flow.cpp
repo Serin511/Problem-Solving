@@ -67,37 +67,38 @@ namespace flow {
 	pair<long long, long long> MCMF(int s, int t, vector<vector<tuple<int, int, int>>> &adj) {
 		int n=adj.size();
 
-		vector<vector<tuple<int, int, int>>> graph(n);
-		vector<vector<int>> len(n);
+		struct edge { int v, c, i, l; };
+		vector<vector<edge>> graph(n);
 		for (int i=0; i<n; i++) for (auto &j:adj[i]) {
 			auto [u, cap, l]=j;
-			graph[i].emplace_back(u, cap, graph[u].size());
-			graph[u].emplace_back(i, 0, graph[i].size()-1);
-			len[i].emplace_back(l);
-			len[u].emplace_back(-l);
+			graph[i].push_back({u, cap, graph[u].size(), l});
+			graph[u].push_back({i, 0, graph[i].size()-1, -l});
 		}
 
 		long long flow=0, cost=0;
+		vector<long long> dst(n), lst(n);
 		while (1) {
-			vector<long long> dst(n, INF_LL), lst(n, -1);
+			fill(dst.begin(), dst.end(), INF_LL);
+			fill(lst.begin(), lst.end(), -1);
+
 			deque<int> stk;
 			stk.emplace_back(s);
 			dst[s]=0;
 			vector<int> in(n);
 			in[s]=1;
+
 			while (stk.size()) {
 				int u=stk.front();
 				stk.pop_front();
 				in[u]=0;
-				for (int j=0; j<graph[u].size(); j++) {
-					auto [v, cap, rev]=graph[u][j];
-					if (cap&&dst[u]+len[u][j]<dst[v]) {
-						dst[v]=dst[u]+len[u][j];
-						lst[v]=u;
-						if (!in[v]) {
-							in[v]=1;
-							if (stk.size()&&dst[v]<dst[stk.front()]) stk.emplace_front(v);
-							else stk.emplace_back(v);
+				for (auto &e:graph[u]) {
+					if (e.c&&dst[u]+e.l<dst[e.v]) {
+						dst[e.v]=dst[u]+e.l;
+						lst[e.v]=e.i;
+						if (!in[e.v]) {
+							in[e.v]=1;
+							if (stk.size()&&dst[e.v]<dst[stk.front()]) stk.emplace_front(e.v);
+							else stk.emplace_back(e.v);
 						}
 					}
 				}
@@ -106,21 +107,12 @@ namespace flow {
 			if (lst[t]==-1) break;
 
 			int fl=INF;
-			for (int i=t; lst[i]!=-1; i=lst[i]) for (auto &j:graph[lst[i]]) {
-				auto [v, cap, rev]=j;
-				if (v==i&&dst[i]+len[i][rev]==dst[lst[i]]&&cap) {
-					fl=min(fl, cap);
-					break;
-				}
-			}
-			for (int i=t; lst[i]!=-1; i=lst[i]) for (auto &j:graph[lst[i]]) {
-				auto [v, cap, rev]=j;
-				if (v==i&&dst[i]+len[i][rev]==dst[lst[i]]&&cap) {
-					get<1>(j)-=fl;
-					get<1>(graph[v][rev])+=fl;
-					cost-=fl*len[i][rev];
-					break;
-				}
+			for (int i=t; lst[i]!=-1; i=graph[i][lst[i]].v) fl=min(fl, graph[graph[i][lst[i]].v][graph[i][lst[i]].i].c);
+			for (int i=t; lst[i]!=-1; i=graph[i][lst[i]].v) {
+				auto &e=graph[i][lst[i]];
+				e.c+=fl;
+				graph[e.v][e.i].c-=fl;
+				cost-=fl*e.l;
 			}
 			flow+=fl;
 		}
